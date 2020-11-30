@@ -4,6 +4,8 @@ class KakaoAuto {
   driver;
   id;
   password;
+  roomLength = 0;
+  roomIndex = 0;
 
   constructor(id, password) {
     this.driver = new Builder().forBrowser('chrome').build();
@@ -15,6 +17,12 @@ class KakaoAuto {
     try {
       await this.login();
       await this.send();
+
+      for (let i = 1; i < this.roomLength; i++) {
+        await this.send();
+      }
+    } catch (e) {
+      console.log(e);
     } finally {
       await this.driver.quit();
     }
@@ -53,7 +61,22 @@ class KakaoAuto {
     }
 
     await this.driver.wait(until.titleIs('카카오톡 공유'), 3000);
-    await this.driver.findElement(By.linkText('채팅')).click();
+    await this.driver.wait(until.elementLocated(By.className('link_tab')), 1000);
+    const tabs = await this.driver.findElements(By.className('link_tab'));
+    await tabs[1].click();
+
+    await this.driver.wait(until.elementLocated(By.className('unit_chat')), 1000);
+    const chats = await this.driver.findElements(By.className('unit_chat'));
+    this.roomLength = chats.length;
+
+    const checkboxes = await this.driver.findElements(By.css('input[type=checkbox]'));
+
+    await checkboxes[this.roomIndex].click();
+
+    const button = await this.driver.findElement(By.css('button > div'));
+    await this.driver.wait(until.elementTextContains(button, '공유하기'));
+    await this.driver.findElement(By.css('button')).click();
+    this.roomIndex++;
   }
 }
 
