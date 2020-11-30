@@ -5,7 +5,14 @@
   "repository": "https://github.com/yonghyun-lee/kakao-bot.git",
   "author": "Yonghyun.Lee <yonghyun.lee@epapyrus.com>",
   "license": "MIT",
+  "scripts": {
+    "start": "node app.js"
+  },
   "dependencies": {
-    "request": "^2.88.2"
+    "dotenv": "^8.2.0",
+    "koa": "^2.13.0",
+    "koa-static": "^5.0.0",
+    "request": "^2.88.2",
+    "selenium-webdriver": "^4.0.0-alpha.7"
   }
 }
