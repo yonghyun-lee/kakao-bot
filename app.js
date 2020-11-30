@@ -3,12 +3,14 @@ const Koa = require('koa');
 const app = new Koa();
 const serve = require('koa-static');
 const path = require('path');
-const selenium = require('./selenium');
-
+const { KakaoAuto } = require('./selenium');
 dotenv.config();
+const kakaoAuto = new KakaoAuto(process.env.id, process.env.password);
 
 app.use(serve('public', path.join(__dirname, '/public')))
 
 app.listen(3000);
 
-selenium.login();
+(async function () {
+  await kakaoAuto.start();
+})();

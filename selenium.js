@@ -5,14 +5,19 @@ class KakaoAuto {
   id;
   password;
 
-  async constructor(id, password) {
-    this.driver = await new Builder().forBrowser('chrome').build();
+  constructor(id, password) {
+    this.driver = new Builder().forBrowser('chrome').build();
     this.id = id;
     this.password = password;
   }
 
-  start() {
-    this.login()
+  async start() {
+    try {
+      await this.login();
+      await this.send();
+    } finally {
+      await this.driver.quit();
+    }
   }
 
   async login() {
@@ -25,6 +30,9 @@ class KakaoAuto {
     passwordInput.sendKeys(this.password, Key.RETURN);
 
     await this.driver.wait(until.titleIs('main'), 1000);
+  }
+
+  async send() {
     const login = await this.driver.findElement(By.id('login'));
     await this.driver.wait(until.elementTextIs(login, 'login'), 3000);
 
@@ -37,7 +45,6 @@ class KakaoAuto {
     );
 
     const originalWindow = await this.driver.getWindowHandle();
-
     const windows = await this.driver.getAllWindowHandles();
     for (const handle of windows) {
       if (handle !== originalWindow) {
@@ -46,24 +53,8 @@ class KakaoAuto {
     }
 
     await this.driver.wait(until.titleIs('카카오톡 공유'), 3000);
-
     await this.driver.findElement(By.linkText('채팅')).click();
-
-    await this.driver.wait(until.titleIs('카카오톡 공유'), 3000);
-
-    const chat = await this.driver.findElement(By.)
   }
-
-
 }
-const login = async () => {
-  let driver = await new Builder().forBrowser('chrome').build();
-  try {
 
-
-  } finally {
-    await driver.quit();
-  }
-};
-
-exports.login = login;
+exports.KakaoAuto = KakaoAuto;
