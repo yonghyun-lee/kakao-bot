@@ -5,10 +5,13 @@ class KakaoAuto {
   id;
   password;
 
-  constructor(driver, id, password) {
-    this.driver = driver;
+  constructor(id, password) {
     this.id = id;
     this.password = password;
+  }
+
+  setDriver(driver) {
+    this.driver = driver;
   }
 
   async start() {

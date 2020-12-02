@@ -5,7 +5,7 @@ class Search {
   time = '';
   content = [];
 
-  constructor(driver) {
+  setDriver(driver) {
     this.driver = driver;
   }
 
