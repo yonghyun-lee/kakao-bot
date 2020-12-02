@@ -29,7 +29,7 @@ router.get('/data', (ctx) => (ctx.body = {
 app.use(router.routes());
 app.listen(3000);
 
-cron.schedule('0 0 10,11,12,13,14,15,16,17,18,19,20,21,22,23 * * *', async () => {
+cron.schedule('0 1 10-23 * * *', async () => {
   const driver = new Builder().forBrowser('chrome').build();
   search.setDriver(driver);
   kakaoAuto.setDriver(driver);

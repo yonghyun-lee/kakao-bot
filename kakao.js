@@ -16,7 +16,12 @@ class KakaoAuto {
 
   async start() {
     await this.login();
-    await this.send('김진형');
+
+    const chatTitles = [ '강형창, 김진형', '김경수, 김진형' ];
+
+    for (const t of chatTitles) {
+      await this.send(t);
+    }
   }
 
   async login() {
