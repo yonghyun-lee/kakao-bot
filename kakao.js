@@ -17,10 +17,17 @@ class KakaoAuto {
   async start() {
     await this.login();
 
-    const chatTitles = [ '강형창, 김진형', '김경수, 김진형' ];
+    const chatTitles = [ '강형창,김진형', '김경수,김진형' ];
 
     for (const t of chatTitles) {
       await this.send(t);
+      //Wait for the new window or tab
+      await this.driver.wait(
+        async () => (await this.driver.getAllWindowHandles()).length === 1,
+        10000
+      );
+      const windows = await this.driver.getAllWindowHandles();
+      await this.driver.switchTo().window(windows[0]);
     }
   }
 
@@ -69,7 +76,8 @@ class KakaoAuto {
       chatList.push(await chats[i].getText());
     }
     const index = chatList.findIndex(chat => {
-      return chat.includes(chatTitle);
+      const users = chatTitle.split(',');
+      return users.every(user => chat.includes(user));
     })
 
     const checkboxes = await this.driver.findElements(By.css('input[type=checkbox]'));
@@ -78,6 +86,11 @@ class KakaoAuto {
 
     const button = await this.driver.findElement(By.css('button > div'));
     await this.driver.wait(until.elementTextContains(button, '공유하기'));
+    await this.driver.findElement(By.css('button')).click();
+
+    await this.driver.wait(until.elementLocated(By.className('btn_commit')), 1000);
+    const close = await this.driver.findElement(By.className('btn_commit'));
+    await this.driver.wait(until.elementTextContains(close, '닫기'));
     await this.driver.findElement(By.css('button')).click();
   }
 }

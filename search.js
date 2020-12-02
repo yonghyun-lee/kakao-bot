@@ -1,4 +1,4 @@
-const { Builder, By, Key, until } = require('selenium-webdriver');
+const { By, Key, until } = require('selenium-webdriver');
 
 class Search {
   driver;
@@ -38,14 +38,40 @@ class Search {
     return result;
   }
 
+  async getDescription(item) {
+    await this.driver.get('https://naver.com');
+
+    await this.driver.findElement(By.name('query')).sendKeys(item, Key.RETURN);
+    await this.driver.wait(until.elementLocated(By.className('news_tit')), 1000);
+    const news = await this.driver.findElement(By.className('news_tit'));
+    const image = await this.driver.findElement(By.css('.dsc_thumb img'));
+
+    console.log(news.getAttribute('href'), image);
+    return {
+      url: await news.getAttribute('href'),
+      title: await news.getAttribute('title'),
+      imageUrl: await image.getAttribute('src'),
+    };
+  }
+
   async makeContents() {
-    const rank = await this.getSearchRank();
-    this.content = rank.map(text => {
+    const ranks = await this.getSearchRank();
+    const descriptions = [];
+    const links = [];
+    const imageUrls = [];
+    for (const rank of ranks) {
+      const data = await this.getDescription(rank);
+      descriptions.push(data.title);
+      links.push(data.url);
+      imageUrls.push(data.imageUrl);
+    }
+    this.content = ranks.map((text, index) => {
       return {
         title: text,
-        imageUrl: '',
+        description: descriptions[index],
+        imageUrl: imageUrls[index],
         link: {
-          mobileWebUrl: 'https://developers.kakao.com',
+          mobileWebUrl: links[index],
         }
       }
     });
