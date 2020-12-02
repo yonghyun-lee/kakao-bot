@@ -1,31 +1,19 @@
-const { Builder, By, Key, until } = require('selenium-webdriver');
+const { By, Key, until } = require('selenium-webdriver');
 
 class KakaoAuto {
   driver;
   id;
   password;
-  roomLength = 0;
-  roomIndex = 0;
 
-  constructor(id, password) {
-    this.driver = new Builder().forBrowser('chrome').build();
+  constructor(driver, id, password) {
+    this.driver = driver;
     this.id = id;
     this.password = password;
   }
 
   async start() {
-    try {
-      await this.login();
-      await this.send();
-
-      for (let i = 1; i < this.roomLength; i++) {
-        await this.send();
-      }
-    } catch (e) {
-      console.log(e);
-    } finally {
-      await this.driver.quit();
-    }
+    await this.login();
+    await this.send('김진형');
   }
 
   async login() {
@@ -40,7 +28,7 @@ class KakaoAuto {
     await this.driver.wait(until.titleIs('main'), 1000);
   }
 
-  async send() {
+  async send(chatTitle) {
     const login = await this.driver.findElement(By.id('login'));
     await this.driver.wait(until.elementTextIs(login, 'login'), 3000);
 
@@ -67,16 +55,22 @@ class KakaoAuto {
 
     await this.driver.wait(until.elementLocated(By.className('unit_chat')), 1000);
     const chats = await this.driver.findElements(By.className('unit_chat'));
-    this.roomLength = chats.length;
+
+    const chatList = [];
+    for (let i = 0; i < chats.length; i++) {
+      chatList.push(await chats[i].getText());
+    }
+    const index = chatList.findIndex(chat => {
+      return chat.includes(chatTitle);
+    })
 
     const checkboxes = await this.driver.findElements(By.css('input[type=checkbox]'));
 
-    await checkboxes[this.roomIndex].click();
+    await checkboxes[index || 0].click();
 
     const button = await this.driver.findElement(By.css('button > div'));
     await this.driver.wait(until.elementTextContains(button, '공유하기'));
     await this.driver.findElement(By.css('button')).click();
-    this.roomIndex++;
   }
 }
 

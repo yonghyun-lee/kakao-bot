@@ -19,14 +19,12 @@ class HttpClient {
 }
 
 function sendLink() {
-  Kakao.Link.sendDefault({
-    objectType: 'text',
-    text: 'gdgd',
-    link: {
-      mobileWebUrl: 'https://developers.kakao.com',
-      androidExecParams: 'test',
-    },
-  })
+  const httpClient = new HttpClient();
+
+  httpClient.onload = event => {
+    Kakao.Link.sendDefault(JSON.parse(event.currentTarget.response));
+  };
+  httpClient.get('http://localhost:3000/data');
 }
 
 window.onload = () => {
