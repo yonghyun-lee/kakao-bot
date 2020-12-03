@@ -20,8 +20,8 @@ router.get('/data', (ctx) => (ctx.body = {
   objectType: 'list',
   headerTitle: search.getTime(),
   headerLink: {
-    mobileWebUrl: 'https://developers.kakao.com',
-    androidExecParams: 'test',
+    mobileWebUrl: 'https://naver.com',
+    webUrl: 'https://naver.com',
   },
   contents: search.getContent(),
 }));

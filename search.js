@@ -46,9 +46,8 @@ class Search {
     const news = await this.driver.findElement(By.className('news_tit'));
     const image = await this.driver.findElement(By.css('.dsc_thumb img'));
 
-    console.log(news.getAttribute('href'), image);
     return {
-      url: await news.getAttribute('href'),
+      url: await this.driver.getCurrentUrl(),
       title: await news.getAttribute('title'),
       imageUrl: await image.getAttribute('src'),
     };
@@ -72,6 +71,7 @@ class Search {
         imageUrl: imageUrls[index],
         link: {
           mobileWebUrl: links[index],
+          webUrl: links[index],
         }
       }
     });
