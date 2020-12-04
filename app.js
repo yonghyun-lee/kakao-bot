@@ -16,14 +16,24 @@ const kakaoAuto = new KakaoAuto(process.env.id, process.env.password);
 
 app.use(serve('public', path.join(__dirname, '/public')))
 
-router.get('/data', (ctx) => (ctx.body = {
+router.get('/rank', (ctx) => (ctx.body = {
   objectType: 'list',
   headerTitle: search.getTime(),
   headerLink: {
     mobileWebUrl: 'https://naver.com',
     webUrl: 'https://naver.com',
   },
-  contents: search.getContent(),
+  contents: search.getContent('rank'),
+}));
+
+router.get('/hotDeal', (ctx) => (ctx.body = {
+  objectType: 'list',
+  headerTitle: '핫딜 정보',
+  headerLink: {
+    mobileWebUrl: 'https://algumon.com/deal/rank',
+    webUrl: 'https://algumon.com/deal/rank',
+  },
+  contents: search.getContent('hotDeal'),
 }));
 
 app.use(router.routes());
@@ -35,7 +45,10 @@ cron.schedule('0 1 10-23/3 * * *', async () => {
   kakaoAuto.setDriver(driver);
 
   try {
-    await search.start();
+    await search.start('rank');
+    if (new Date().getHours() === 9) {
+      await search.start('hotDeal');
+    }
     await kakaoAuto.start();
   } catch (e) {
     console.log(e);

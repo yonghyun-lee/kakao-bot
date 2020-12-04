@@ -20,8 +20,17 @@ class KakaoAuto {
     const chatTitles = [ '강형창,김진형', '김경수,김진형' ];
 
     for (const t of chatTitles) {
-      await this.send(t);
-      //Wait for the new window or tab
+      await this.send('kakao-link-btn', t);
+      await this.driver.wait(
+        async () => (await this.driver.getAllWindowHandles()).length === 1,
+        10000
+      );
+      const windows = await this.driver.getAllWindowHandles();
+      await this.driver.switchTo().window(windows[0]);
+    }
+
+    for (const t of chatTitles) {
+      await this.send('kakao-link-btn2', t);
       await this.driver.wait(
         async () => (await this.driver.getAllWindowHandles()).length === 1,
         10000
@@ -43,11 +52,12 @@ class KakaoAuto {
     await this.driver.wait(until.titleIs('main'), 1000);
   }
 
-  async send(chatTitle) {
+  async send(buttonId, chatTitle) {
     const login = await this.driver.findElement(By.id('login'));
     await this.driver.wait(until.elementTextIs(login, 'login'), 3000);
 
-    await this.driver.findElement(By.id('kakao-link-btn')).click();
+    console.log(await this.driver.findElement(By.id(buttonId)));
+    await this.driver.findElement(By.id(buttonId)).click();
 
     //Wait for the new window or tab
     await this.driver.wait(

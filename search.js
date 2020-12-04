@@ -1,16 +1,55 @@
-const { By, Key, until } = require('selenium-webdriver');
+const { By, Key, until, withTagName } = require('selenium-webdriver');
 
 class Search {
   driver;
   time = '';
-  content = [];
+  rankContent = [];
+  hotDealContent = [];
 
   setDriver(driver) {
     this.driver = driver;
   }
 
-  async start() {
-    await this.makeContents();
+  async start(type) {
+    switch (type) {
+      case 'rank':
+        await this.makeRankContents();
+        break;
+      case 'hotDeal':
+        await this.makeHotDealContents();
+        break;
+    }
+  }
+
+  async makeHotDealContents() {
+    await this.driver.get('https://algumon.com/deal/rank');
+
+    const imgs = await this.driver.findElements(
+      By.css(`.post-li .product-img-box img`),
+    );
+
+    const products = await this.driver.findElements(
+      By.css(`.post-li .product-link`),
+    );
+
+    const prices = await this.driver.findElements(
+      By.css(`.post-li .product-price`),
+    );
+
+    let result = [];
+    for (let i = 0; i < 3; i++) {
+      result.push({
+        title: await products[i].getText(),
+        description: await prices[i].getText(),
+        imageUrl: await imgs[i].getAttribute('src'),
+        link: {
+          mobileWebUrl: 'https://algumon.com/deal/rank',
+          webUrl: 'https://algumon.com/deal/rank',
+        }
+      })
+    }
+
+    this.hotDealContent = result;
   }
 
   async getSearchRank() {
@@ -53,7 +92,7 @@ class Search {
     };
   }
 
-  async makeContents() {
+  async makeRankContents() {
     const ranks = await this.getSearchRank();
     const descriptions = [];
     const links = [];
@@ -64,7 +103,7 @@ class Search {
       links.push(data.url);
       imageUrls.push(data.imageUrl);
     }
-    this.content = ranks.map((text, index) => {
+    this.rankContent = ranks.map((text, index) => {
       return {
         title: text,
         description: descriptions[index],
@@ -81,8 +120,13 @@ class Search {
     return this.time;
   }
 
-  getContent() {
-    return this.content;
+  getContent(type) {
+    switch (type) {
+      case 'rank':
+        return this.rankContent;
+      case 'hotDeal':
+        return this.hotDealContent;
+    }
   }
 }
 

@@ -24,7 +24,16 @@ function sendLink() {
   httpClient.onload = event => {
     Kakao.Link.sendDefault(JSON.parse(event.currentTarget.response));
   };
-  httpClient.get('http://localhost:3000/data');
+  httpClient.get('http://localhost:3000/rank');
+}
+
+function sendLinkHotDeal() {
+  const httpClient = new HttpClient();
+
+  httpClient.onload = event => {
+    Kakao.Link.sendDefault(JSON.parse(event.currentTarget.response));
+  };
+  httpClient.get('http://localhost:3000/hotDeal');
 }
 
 window.onload = () => {
